@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import SearchBar from './components/SearchBar'
+import CountryList from './components/CountryList'
+import Country from './components/Country'
 
-function App() {
+import axios from 'axios'
+
+const App = () => {
+  const [ countries, setCountries ] = useState([])
+  const [ filter, setFilter ] = useState('')
+  const [ filtered, setFiltered ] = useState([])
+
+  useEffect(() => {
+    axios
+      .get('https://restcountries.eu/rest/v2/all')
+      .then(response => {
+        console.log(response.data)
+        setCountries(response.data)
+      })
+  }, [])
+
+  useEffect(() => {
+    const filterCountries = countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
+    setFiltered(filterCountries)
+  }, [filter, countries])
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <SearchBar setFilter={setFilter} />
+      {
+        filtered.length > 10
+          ? <p>Too many matches, specify another fitler</p>
+          : filtered.length === 1
+          ? <Country country={filtered[0]} />
+          : <CountryList filtered={filtered} />
+      }
     </div>
   );
 }
