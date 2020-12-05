@@ -17,6 +17,7 @@ const App = () => {
         console.log(response.data)
         setCountries(response.data)
       })
+    
   }, [])
 
   useEffect(() => {
